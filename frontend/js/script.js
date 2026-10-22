@@ -1,4 +1,4 @@
-const API_BASE_URL = window.PLANT_API_BASE_URL || "http://127.0.0.1:8000";
+const API_BASE_URL = "https://plant-disease-detection-1-ncu4.onrender.com";
 const API_URL = new URL("/api/v1/predict", API_BASE_URL).toString();
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 

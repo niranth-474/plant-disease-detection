@@ -47,7 +47,7 @@ The prediction endpoint accepts a multipart form upload named `file` and returns
 
 Camera permission is available on `localhost`/`127.0.0.1` or an HTTPS deployment. The frontend uses `getUserMedia()` only after the user selects **Start camera**. Capture creates one still image for prediction; the app does not run continuous webcam inference. Camera tracks are stopped when the user presses **Stop camera**, captures a frame, or leaves the page.
 
-For a different API host, update `window.PLANT_API_BASE_URL` in `frontend/config.js` and set the frontend origin in the API host's `FRONTEND_ORIGINS` environment variable.
+For a different API host, update `API_BASE_URL` in `frontend/js/script.js` and set the frontend origin in the API host's `FRONTEND_ORIGINS` environment variable.
 
 ### Deploying with Hugging Face model files
 
@@ -57,7 +57,7 @@ The API downloads `best_model.pth` and `class_names.json` from the Hugging Face 
 
 The files must be at the repository root and use those exact names. You can set `HF_MODEL_REPO_ID` on the hosting provider if you use another repository. For a private or gated repository, set `HF_TOKEN` as a secret environment variable; never put the token in source code. Public repositories do not need a token. The host needs outbound access to `huggingface.co`, and its disk/cache must be large enough for the checkpoint. A model download or load failure is logged at startup and reported by health checks as `model_loaded: false`.
 
-For a separately hosted static frontend, edit `frontend/config.js` before deploying it and set `window.PLANT_API_BASE_URL` to the public HTTPS base URL of the API, for example `https://your-api.onrender.com` (no `/api/v1/predict` suffix). On the API host, set `FRONTEND_ORIGINS` to the exact frontend origin, for example `https://your-site.vercel.app`. Multiple allowed origins may be comma-separated. Localhost origins remain enabled for development.
+For a separately hosted static frontend, set `API_BASE_URL` in `frontend/js/script.js` to the public HTTPS base URL of the API (no `/api/v1/predict` suffix). On the API host, set `FRONTEND_ORIGINS` to the exact frontend origin, for example `https://your-site.vercel.app`. Multiple allowed origins may be comma-separated. Localhost origins remain enabled for development.
 
 ## Run tests and check the environment
 
