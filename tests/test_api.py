@@ -1,11 +1,14 @@
 import asyncio
 import json
+import os
 import unittest
 from io import BytesIO
+from pathlib import Path
+from unittest.mock import patch
 
 from PIL import Image
 
-from backend.web import MAX_IMAGE_BYTES, app
+from backend.web import MAX_IMAGE_BYTES, REPO_ID, app, load_prediction_service
 from backend.services.prediction_service import PredictionService
 from model.config import BEST_MODEL_PATH, CLASS_NAMES_PATH
 
@@ -75,6 +78,40 @@ class PredictionApiTests(unittest.TestCase):
 
     def request(self, *args, **kwargs):
         return asyncio.run(asgi_request(*args, **kwargs))
+
+    def test_prediction_service_uses_hugging_face_artifact_paths(self):
+        with (
+            patch(
+                "backend.web.hf_hub_download",
+                side_effect=[
+                    "C:/hf-cache/best_model.pth",
+                    "C:/hf-cache/class_names.json",
+                ],
+            ) as download,
+            patch(
+                "backend.web.PredictionService.from_files",
+                return_value=object(),
+            ) as from_files,
+            patch.dict(os.environ, {"HF_TOKEN": "test-token"}),
+        ):
+            service = load_prediction_service()
+
+        self.assertIs(service, from_files.return_value)
+        self.assertEqual(download.call_count, 2)
+        self.assertEqual(
+            [call.kwargs["filename"] for call in download.call_args_list],
+            ["best_model.pth", "class_names.json"],
+        )
+        self.assertTrue(
+            all(call.kwargs["repo_id"] == REPO_ID for call in download.call_args_list)
+        )
+        from_files.assert_called_once_with(
+            checkpoint_path=Path("C:/hf-cache/best_model.pth"),
+            class_names_path=Path("C:/hf-cache/class_names.json"),
+        )
+        self.assertTrue(
+            all(call.kwargs["token"] == "test-token" for call in download.call_args_list)
+        )
 
     def test_health_reports_loaded_model(self):
         status, payload = self.request("/health")

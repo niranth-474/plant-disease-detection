@@ -1,28 +1,58 @@
+import asyncio
 import logging
+import os
 import pickle
 from contextlib import asynccontextmanager
 from io import BytesIO
+from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from huggingface_hub import hf_hub_download
+from huggingface_hub.errors import HfHubHTTPError
 from PIL import Image, UnidentifiedImageError
 
 from backend.schemas import HealthResponse, PredictionResponse
 from backend.services.prediction_service import PredictionService
 
-
 logger = logging.getLogger(__name__)
 MAX_IMAGE_BYTES = 10 * 1024 * 1024
 MAX_IMAGE_PIXELS = 20_000_000
+REPO_ID = os.environ.get(
+    "HF_MODEL_REPO_ID",
+    "niranthanand/plant_disease_detection",
+)
+
+
+def load_prediction_service() -> PredictionService:
+    """Download the model artifacts from Hugging Face and load them once."""
+    token = os.environ.get("HF_TOKEN")
+    model_path = hf_hub_download(
+        repo_id=REPO_ID,
+        filename="best_model.pth",
+        token=token,
+    )
+    class_names_path = hf_hub_download(
+        repo_id=REPO_ID,
+        filename="class_names.json",
+        token=token,
+    )
+    return PredictionService.from_files(
+        checkpoint_path=Path(model_path),
+        class_names_path=Path(class_names_path),
+    )
 
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):
     try:
-        application.state.prediction_service = PredictionService.from_files()
+        application.state.prediction_service = await asyncio.to_thread(
+            load_prediction_service
+        )
     except (
         EOFError,
         FileNotFoundError,
+        HfHubHTTPError,
         OSError,
         pickle.UnpicklingError,
         ValueError,
@@ -39,14 +69,20 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+development_origins = [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:5501",
+    "http://127.0.0.1:5501",
+]
+deployment_origins = [
+    origin.strip().rstrip("/")
+    for origin in os.environ.get("FRONTEND_ORIGINS", "").split(",")
+    if origin.strip()
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5500",
-        "http://127.0.0.1:5500",
-        "http://localhost:5501",
-        "http://127.0.0.1:5501",
-    ],
+    allow_origins=development_origins + deployment_origins,
     allow_credentials=False,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
