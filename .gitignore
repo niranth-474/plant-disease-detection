@@ -1,0 +1,15 @@
+# Local Python environments and generated files
+myenv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Dataset and trained model weights
+PlantVillage/
+saved_models/*.pth
+saved_models/*.pt
+
+# Evaluation outputs
+saved_models/confusion_matrix.png
+saved_models/evaluation_results.json

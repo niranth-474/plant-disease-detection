@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7ef">
+    <title>Leafwise | Plant health, in a photo</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/script.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Leafwise home">
+        <span class="brand-mark" aria-hidden="true">✳</span>
+        <span>leafwise</span>
+      </a>
+      <span class="top-note"><span class="status-dot"></span> Plant health companion</span>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow"><span></span> A little clarity for your garden</p>
+        <h1>Know what your<br><span>leaves are telling you.</span></h1>
+        <p class="intro-copy">Take a clear photo of a leaf and get an instant prediction from your plant disease model.</p>
+      </section>
+
+      <section class="workspace" aria-label="Plant photo prediction">
+        <div class="capture-card">
+          <div class="card-heading">
+            <div>
+              <p class="step-label">YOUR LEAF</p>
+              <h2>Add a photo to get started</h2>
+            </div>
+            <span class="leaf-icon" aria-hidden="true">✿</span>
+          </div>
+
+          <div class="preview" id="preview">
+            <div class="empty-preview" id="emptyPreview">
+              <div class="scan-frame" aria-hidden="true"><span>✳</span></div>
+              <p>Your photo will appear here</p>
+              <span>For best results, use a clear, well-lit leaf photo</span>
+            </div>
+            <img id="previewImage" alt="Selected leaf preview" hidden>
+            <video id="cameraVideo" autoplay playsinline muted hidden></video>
+            <canvas id="captureCanvas" hidden></canvas>
+            <span class="preview-tag" id="previewTag" hidden>READY TO ANALYZE</span>
+          </div>
+          <p class="camera-hint" id="cameraHint">Camera access works on localhost or HTTPS. You can also upload a photo.</p>
+
+          <div class="actions" id="photoActions">
+            <label class="button button-primary upload-button" for="imageInput">
+              <span aria-hidden="true">↑</span> Choose a photo
+            </label>
+            <input id="imageInput" type="file" accept="image/*" aria-label="Choose a leaf photo" hidden>
+            <button class="button button-secondary" id="startCameraButton" type="button">
+              <span aria-hidden="true">◎</span> Start camera
+            </button>
+          </div>
+          <div class="camera-actions" id="cameraActions" hidden>
+            <button class="button button-primary" id="captureButton" type="button">Capture frame</button>
+            <button class="button button-secondary" id="stopCameraButton" type="button">Stop camera</button>
+          </div>
+          <div class="retake-actions" id="retakeActions" hidden>
+            <button class="button button-primary" id="predictButton" type="button">Predict this leaf</button>
+            <button class="button button-secondary" id="retakeButton" type="button">Retake photo</button>
+            <button class="text-button" id="chooseAnotherButton" type="button">Choose another</button>
+          </div>
+          <p class="privacy-note"><span aria-hidden="true">⌑</span> Photos are processed for prediction and are not stored by this app.</p>
+        </div>
+
+        <aside class="result-card" aria-live="polite" aria-atomic="false">
+          <div class="result-heading">
+            <p class="step-label">THE RESULT</p>
+            <span class="result-spark" aria-hidden="true">✳</span>
+          </div>
+          <div class="result-empty" id="resultEmpty">
+            <div class="result-illustration" aria-hidden="true">
+              <span class="result-leaf leaf-one">♧</span>
+              <span class="result-leaf leaf-two">♧</span>
+              <span class="result-stem"></span>
+            </div>
+            <h2>Your insight<br>will grow here.</h2>
+            <p>Once you add a photo, we’ll show the most likely match and other possibilities.</p>
+          </div>
+          <div class="result-content" id="resultContent" hidden>
+            <p class="result-label">MOST LIKELY</p>
+            <h2 id="predictedClass"></h2>
+            <div class="confidence-row">
+              <span>Model confidence</span>
+              <strong id="confidenceValue"></strong>
+            </div>
+            <div class="confidence-track"><span id="confidenceBar"></span></div>
+            <div class="other-predictions" id="otherPredictions"></div>
+            <p class="result-disclaimer">Model confidence is an estimate, not a guarantee or a substitute for expert diagnosis.</p>
+          </div>
+          <div class="loading-state" id="loadingState" hidden>
+            <span class="loader" aria-hidden="true"></span>
+            <h2>Looking closely...</h2>
+            <p>Checking the patterns on your leaf.</p>
+          </div>
+          <div class="error-message" id="errorMessage" role="alert" hidden></div>
+        </aside>
+      </section>
+
+      <section class="how-it-works" aria-label="How it works">
+        <div><span class="how-number">01</span><p><strong>Choose a leaf</strong><br>Upload or take a photo</p></div>
+        <span class="how-line" aria-hidden="true"></span>
+        <div><span class="how-number">02</span><p><strong>Let the model look</strong><br>Patterns are analyzed in seconds</p></div>
+        <span class="how-line" aria-hidden="true"></span>
+        <div><span class="how-number">03</span><p><strong>See the possibilities</strong><br>Review the top predictions</p></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Made for curious growers</span>
+      <span>Take a breath. Your plants are in good hands. <span aria-hidden="true">♡</span></span>
+    </footer>
+  </body>
+</html>
